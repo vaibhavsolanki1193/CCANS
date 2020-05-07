@@ -1,4 +1,5 @@
 from pprint import pprint
+import re
 
 tagged_message = {'actorId': 'Y2lzY29zcGFyazovL3VzL1BFT1BMRS82YjQ4ZGZiYy0xYmU3LTRmYjEtOWM0NS1lMWRlODAzYjA1OWE',
  'created': '2020-04-23T02:21:03.514Z',
@@ -86,6 +87,22 @@ in_ack = {'actorId': 'Y2lzY29zcGFyazovL3VzL1BFT1BMRS82YjQ4ZGZiYy0xYmU3LTRmYjEtOW
  'resource': 'attachmentActions',
  'status': 'active'}
 
+unicast_message = {'actorId': 'Y2lzY29zcGFyazovL3VzL1BFT1BMRS82ZmJlMGYxNi1lZGU3LTQ1NmYtOTUyOS04MTE3YTgyNWFhZTA',
+ 'created': '2020-05-07T02:27:31.742Z',
+ 'createdBy': 'Y2lzY29zcGFyazovL3VzL1BFT1BMRS9lOGM0ZTVlYi0zOGY4LTQ3MmMtYTM3MS1kODg2YmExZjc3OTg',
+ 'data': {'created': '2020-05-07T04:46:37.612Z',
+          'id': 'Y2lzY29zcGFyazovL3VzL01FU1NBR0UvYmM1MTU2YzAtOTAxZC0xMWVhLTlmNjEtOTcwOTE1MDk3YTBm',
+          'markdown': 'tes1',
+          'personEmail': 'sancuriousvaibhav@gmail.com',
+          'personId': 'Y2lzY29zcGFyazovL3VzL1BFT1BMRS82ZmJlMGYxNi1lZGU3LTQ1NmYtOTUyOS04MTE3YTgyNWFhZTA',
+          'roomId': 'Y2lzY29zcGFyazovL3VzL1JPT00vOGZmMWYzMjQtMzIxNC0zNzZlLTg4Y2EtNjEyZjU3Y2IxYmEz',
+          'roomType': 'direct',
+          'text': '<p>tes1</p>'},
+ 'event': 'created',
+ 'orgId': 'Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8xZWI2NWZkZi05NjQzLTQxN2YtOTk3NC1hZDcyY2FlMGUxMGY',
+ 'ownedBy': 'creator',
+ 'resource': 'messages',
+ 'status': 'active'}
 class FilterMessage():
 
     def __init__(self):
@@ -95,7 +112,9 @@ class FilterMessage():
         try:
             if unfitlered_message['data'].get('markdown') and unfitlered_message['data']['text'].count('data-object-id') == 2:
                 print('Tagged Message Received')
-            elif unfitlered_message['data'].get('markdown') and unfitlered_message['data']['text'].count('data-object-id') < 2:
+            elif unfitlered_message['data'].get('roomType') == 'direct':
+                print('unicast message')
+            elif unfitlered_message['data'].get('markdown') and unfitlered_message['data']['text'].count('data-object-id') is not 2:
                 print("this in untagged message")
             elif unfitlered_message['data'].get('text') == 'Card: Crtitical Case Alert':
                 print('Adaptive card detected')
@@ -106,3 +125,24 @@ class FilterMessage():
         except Exception as e:
             print(e)
 
+    def get_issue_type(self, inMsg):
+        print("-->> FilterMessage.get_issue_type():")
+        markdown = inMsg['data']['markdown']
+        if 'pri' in markdown.lower():
+            return "pri"
+        elif 'gateway' in markdown.lower():
+            return "gateway"
+
+    def get_object_id(self, inMsg):
+        print("-->> FilterMessage.get_object_id():")
+        message_text = inMsg['data']['text']
+        pattern = "data-object-id=\"([^\"]+)\""
+        # fetch object_ID from text saves it in a list
+        ob_id = re.findall(pattern, message_text)
+        # the second user_id object, first is for bot
+        userId = ob_id[1]
+        return userId
+
+# # internal testing 
+# fObj = FilterMessage()
+# fObj.main_filter(unicast_message)
