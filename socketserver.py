@@ -5,11 +5,12 @@ import json
 import ast
 from FilterMessage import FilterMessage
 
+
 class Server():
     def __init__(self, ip, port):
         self.ip = ip
         self.port = port
-    
+
     def start_server(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.bind((self.ip,self.port))
@@ -18,7 +19,7 @@ class Server():
         connected = True
         while connected:
             # starting server
-            conn,address = server_socket.accept()
+            conn, address = server_socket.accept()
             print(f"[NEW CONECTION] {conn} {address} connected")
             data_received = conn.recv(2048).decode()
             if len(data_received) == 0:
@@ -35,11 +36,9 @@ class Server():
                 # print(type(mod_string))
                 # conn.send(data_received.encode())    # if sending the data to a different client  
 
-
         conn.close()
 
 if __name__ == '__main__':
     ip = socket.gethostbyname(socket.gethostname())
-    server1 = Server("127.0.0.1",5050)
+    server1 = Server("127.0.0.1", 5050)
     server1.start_server()
-
