@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime
 
 teams_person = {
   "id": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS82YjQ4ZGZiYy0xYmU3LTRmYjEtOWM0NS1lMWRlODAzYjA1OWE",
@@ -34,12 +35,23 @@ class dbFunctions():
     def insert_test(self, tup):
         sql_insert = """
                     INSERT INTO test(first, second) VALUES (?,?)"""
-
         self.cur.execute(sql_insert, tup)
         self.con.commit()
 
-    def insert_in_tagged_table(self, taggedRow):
+    def insert_in_tagged_table(self, inMsg):
         print("-->> databasefuntions.insert_in_tagged_table():")
+        created = inMsg['data']['created']
+        # strip last 5 unwanted digit and save as datetime object
+        readableTime = datetime.strptime(created[:-5], '%Y-%m-%dT%H:%M:%S') 
+        msgId = inMsg['data']['id']
+        markdown = inMsg['data']['markdown']
+        email = inMsg['data']['personEmail']
+        personId = inMsg['data']['personId']
+        roomId = inMsg['data']['roomId']
+        roomType = inMsg['data']['roomType']
+        text = inMsg['data']['text']
+        event = inMsg['event']
+        taggedRow = (readableTime, msgId, markdown, email, personId, roomId, roomType, text, event)
         sql_insert = '''INSERT INTO TaggedMessage(created, messageId,markdown,
                         personEmail, personId, roomId, roomType, text, event)
                         VALUES (?,?,?,?,?,?,?,?,?)'''
@@ -82,6 +94,9 @@ class dbFunctions():
         else:
             print('user found')
             return True
+
+    def write_in_adaptive_card(self ):
+        pass
 
     def __del__(self):
         self.con.close()
