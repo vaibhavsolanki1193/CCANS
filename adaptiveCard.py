@@ -1,8 +1,8 @@
 
 from pyadaptivecards.card import AdaptiveCard
-from pyadaptivecards.inputs import Text, Number
-from pyadaptivecards.components import TextBlock, Image, ImageSize
+from pyadaptivecards.components import TextBlock, Image
 from pyadaptivecards.actions import Submit
+
 
 class AdpCard():
     def __init__(self):
@@ -11,12 +11,20 @@ class AdpCard():
 
     def send_card(self, userObjId, inMsg, issueType, dbObj, webexObj):
         print("-->> AdaptiveCard.send_card():")
+        IssueActionMapping = {
+            'pri': '\n\n These details might help:\n 1. show isdn status \n 2. show controller',
+            'gateway': '\n\n These details might help: \n 1. show ccm-manager\n 2. show isdn status \n 3. Check for crash files\n 4. Check for uptime'
+        }
+        AlertTextMapping = {
+            'pri': 'PRI is Down',
+            'gateway': 'Gateway is unreachable'
+        }
         # greeting = TextBlock("Critical Case Alert Notification",weight="bolder",horizontalAlignment="center")
-        alert_type = TextBlock('Alert Type: PRI is Down',color="attention")
-        req_action = TextBlock('\n\n Please collect the following: \n 1. show isdn status \n 2. show controller')
-        CCANS_logo = Image(url=self.Main_Banner_with_text)
+        alertType = TextBlock(f'Alert Type:{AlertTextMapping[issueType]}', color="attention")
+        reqAction = TextBlock(f'{IssueActionMapping[issueType]}')
+        CCANSLogo = Image(url=self.Main_Banner_with_text)
         submit = Submit(title="ACK",)
-        card = AdaptiveCard(body=[CCANS_logo, alert_type, req_action], actions=[submit])
+        card = AdaptiveCard(body=[CCANSLogo, alertType, reqAction], actions=[submit])
         attachment = {
                     "contentType": "application/vnd.microsoft.card.adaptive",
                     "content": card.to_dict(),
