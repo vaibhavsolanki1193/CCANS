@@ -16,6 +16,8 @@ class MainThread():
         adpCardObj = AdpCard()
         filterObj = FilterMessage()
         if messageType == "TaggedMessage":
-            webexObj.tagged_Message_Actions(inMsg, dbObj, filterObj, adpCardObj, webexObj)
+            webexObj.tagged_Message_Actions(inMsg=inMsg, dbObj=dbObj, filterObj=filterObj, adpCardObj=adpCardObj, webexObj=webexObj)
         elif messageType == "AdaptiveCard":
             dbObj.insert_in_adaptive_card(inMsg=inMsg, webexObj=webexObj)
+        elif messageType == "UntaggedMessage":
+            webexObj.non_tagged_message_action(inMsg=inMsg, dbObj=dbObj, filterObj=filterObj, adpCardObj=adpCardObj, webexObj=webexObj)
