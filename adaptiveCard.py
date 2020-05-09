@@ -1,4 +1,3 @@
-
 from pyadaptivecards.card import AdaptiveCard
 from pyadaptivecards.components import TextBlock, Image
 from pyadaptivecards.actions import Submit
