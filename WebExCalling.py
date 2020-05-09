@@ -30,7 +30,33 @@ class WebExActions():
             dbObj.insert_in_people(userObjId, userDet)
             print('user entry saved in table')
             print("Calling send_adaptive_card(new user)")
-            adpCardObj.send_card(userObjId, inMsg, issueType, dbObj, webexObj)
+            adpCardObj.send_card(userObjId, issueType, dbObj, webexObj)
         else:
             print("Calling send_adaptive_card(existing user)")
-            adpCardObj.send_card(userObjId, inMsg, issueType, dbObj, webexObj)
+            adpCardObj.send_card(userObjId, issueType, dbObj, webexObj)
+
+    def non_tagged_message_action(self, inMsg, dbObj, filterObj, adpCardObj, webexObj):
+        print("-->> WebExCalling.non_tagged_message_action():")
+        if not inMsg['data'].get('markdown'):
+            return False
+        else:
+            issueType = filterObj.get_issue_type(inMsg)
+            messageText = inMsg['data']['markdown']
+            print(messageText)
+            possibleNickname = messageText.split('>')[-1].strip()
+            searchName = dbObj.user_search_name(possibleNickname)
+            dbObj.insert_in_nonTagged_table(issueType=issueType, inMsg=inMsg)
+            print(searchName)
+            if searchName == "NotFound":
+                # send info to QM that alert failed
+                roomId = inMsg['data']['roomId']
+                failedMsg = inMsg['data']['markdown']
+                failureMsg = f"""The message '{failedMsg}' appears to be in incorrect format and the CE has 'NOT' been notified of the case. Please fix the format. Tag bot and send message 'help' for more information. Think the format is correct ? Send the message screenshot to vasolank@cisco.com"""
+                webexObj.ccans_api.messages.create(roomId=roomId, markdown=failureMsg)
+            else:
+                userId = searchName
+                adpCardObj.send_card(userId, issueType=issueType, dbObj=dbObj, webexObj=webexObj)
+                roomId = inMsg['data']['roomId']
+                failedMsg = inMsg['data']['markdown']
+                failureMsg = f"""The message '{failedMsg}' appears to be in incorrect format. CE is notified about the case however, please stick to the format and tag the CE. Tag bot and send message 'help' for more information. Think the format is correct ? Send the message screenshot to vasolank@cisco.com"""
+                webexObj.ccans_api.messages.create(roomId=roomId, text=failureMsg)
