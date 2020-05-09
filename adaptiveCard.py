@@ -8,7 +8,7 @@ class AdpCard():
         self.Main_Banner = "https://i.imgur.com/uRFi2jX.png"
         self.Main_Banner_with_text = "https://i.imgur.com/AVR3OC6.png"
 
-    def send_card(self, userObjId, inMsg, issueType, dbObj, webexObj):
+    def send_card(self, userObjId, issueType, dbObj, webexObj):
         print("-->> AdaptiveCard.send_card():")
         IssueActionMapping = {
             'pri': '\n\n These details might help:\n 1. show isdn status \n 2. show controller',
