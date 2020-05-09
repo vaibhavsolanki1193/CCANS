@@ -81,8 +81,38 @@ class dbFunctions():
         self.cur.execute(sqlQuery, adaptiveCardRow)
         self.con.commit()
 
+    def user_search_name(self, nickName):
+        print("""-->>databasefunctions.insert_in_adaptive_card():""")
+        sqlQuery = f"SELECT id from People where nickname='{nickName.capitalize()}'"
+        self.cur.execute(sqlQuery)
+        queryResult = self.cur.fetchall()
+        if len(queryResult) == 0:
+            return "NotFound"
+        elif len(queryResult) == 1:
+            return queryResult[0][0]
+        else:
+            return "NotFound"
+
+    def insert_in_nonTagged_table(self, issueType, inMsg):
+        print("-->> databasefuntions.insert_in_nontagged_table():")
+        created = inMsg['data']['created']
+        readableTime = datetime.strptime(created[:-5], '%Y-%m-%dT%H:%M:%S')
+        msgId = inMsg['data']['id']
+        markdown = inMsg['data']['markdown']
+        email = inMsg['data']['personEmail']
+        actorId = inMsg['data']['personId']
+        roomId = inMsg['data']['roomId']
+        roomType = inMsg['data']['roomType']
+        text = inMsg['data']['text']
+        event = inMsg['event']
+        nonTaggedRow = (readableTime, msgId, markdown, email, actorId, roomId, roomType, text, issueType, event)
+        sqlQuery = f"INSERT INTO NonTaggedMessage values (?,?,?,?,?,?,?,?,?,?)"
+        self.cur.execute(sqlQuery, nonTaggedRow)
+        self.con.commit()
+
     def __del__(self):
         self.con.close()
+
 
 # internal testing
 # dbObject = dbFunctions()
