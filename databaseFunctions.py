@@ -4,7 +4,7 @@ from datetime import datetime
 
 class dbFunctions():
     def __init__(self):
-        self.con = sqlite3.connect(r"data/UCCANS_DB.sqlite")
+        self.con = sqlite3.connect(r"Resources/UCCANS_DB.sqlite")
         self.cur = self.con.cursor()
 
     def insert_in_tagged_table(self, issueType, inMsg):

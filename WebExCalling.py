@@ -2,7 +2,7 @@ from webexteamssdk import WebexTeamsAPI
 
 
 class WebExActions():
-    access_token = 'ZWE5NDI4NzEtYzZjOC00OTYyLWJmMjUtNDk4MWI5YmJmNjg0ZGIzOTBhZjktOWQ3_PF84_1eb65fdf-9643-417f-9974-ad72cae0e10f'
+    access_token = 'YOUR BOT TOKEN'
     ccans_api = WebexTeamsAPI(access_token=access_token)
 
     def __init__(self):
